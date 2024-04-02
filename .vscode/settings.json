@@ -1,0 +1,9 @@
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.validate": ["javascript", "typescript"],
+  "typescript.suggest.paths": false,
+  "javascript.suggest.paths": false,
+  "eslint.lintTask.enable": true,
+}
