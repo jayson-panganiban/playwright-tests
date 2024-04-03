@@ -1,5 +1,5 @@
-import { BaseComponent } from "./baseComponent";
-import { Page, Locator } from "playwright/test";
+import { BaseComponent } from './baseComponent';
+import { Page } from 'playwright/test';
 
 export class Filter extends BaseComponent<Page> {
   constructor(page: Page) {

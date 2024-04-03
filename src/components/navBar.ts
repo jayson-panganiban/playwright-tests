@@ -1,5 +1,5 @@
-import { BaseComponent } from "./baseComponent";
-import { Page, Locator } from "@playwright/test";
+import { BaseComponent } from './baseComponent';
+import { Page, Locator } from '@playwright/test';
 
 export class NavBar extends BaseComponent<Page> {
   readonly mintooLink: Locator;
@@ -9,10 +9,10 @@ export class NavBar extends BaseComponent<Page> {
 
   constructor(page: Page) {
     super(page);
-    this.mintooLink = this.page.getByRole("link", { name: "Mintoo" });
-    this.signUpButton = this.page.getByRole("button", { name: "Sign up" });
-    this.loginButton = this.page.getByRole("button", { name: "Login" });
-    this.searchTextbox = this.page.getByRole("textbox");
+    this.mintooLink = this.page.getByRole('link', { name: 'Mintoo' });
+    this.signUpButton = this.page.getByRole('button', { name: 'Sign up' });
+    this.loginButton = this.page.getByRole('button', { name: 'Login' });
+    this.searchTextbox = this.page.getByRole('textbox');
   }
 
   getLocators(): Locator[] {

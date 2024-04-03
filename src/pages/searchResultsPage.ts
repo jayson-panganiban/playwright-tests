@@ -1,13 +1,15 @@
-import { Locator, Page } from "@playwright/test";
-import { BasePage } from "./basePage";
-import { NavBar } from "../components/navBar";
-import { Footer } from "../components/footer";
-import { Card } from "../components/card";
+import { Locator, Page } from '@playwright/test';
+import { BasePage } from './basePage';
+import { NavBar } from '../components/navBar';
+import { Footer } from '../components/footer';
+import { Cards } from '../components/cards';
+import { Sliders } from '../components/sliders';
 
 export class SearchResultsPage extends BasePage<Page> {
   readonly navBar: NavBar;
   readonly footer: Footer;
-  readonly card: Card;
+  readonly sliders: Sliders;
+  readonly cards: Cards;
   readonly searchResult: Locator;
   readonly exclusiveCollections: Locator;
   readonly noExclusiveCollectionsFound: Locator;
@@ -19,14 +21,21 @@ export class SearchResultsPage extends BasePage<Page> {
     super(page);
     this.footer = new Footer(page);
     this.navBar = new NavBar(page);
-    this.card = new Card(page);
-    this.searchResult = this.page.getByText(`Search results for "${searchTerm}"`).first();
-    this.exclusiveCollections = this.page.getByText("Exclusive Collections").first();
+    this.sliders = new Sliders(page);
+    this.cards = new Cards(page);
+    this.searchResult = this.page
+      .getByText(`Search results for "${searchTerm}"`)
+      .first();
+    this.exclusiveCollections = this.page
+      .getByText('Exclusive Collections')
+      .first();
     this.noExclusiveCollectionsFound = this.page.getByText(
-      "No  Exclusive Collections"
+      'No  Exclusive Collections'
     );
-    this.noResultFound = this.page.getByText(`No result found for "${searchTerm}"`);
-    this.tryAgain = this.page.getByText("Please try again with another");
+    this.noResultFound = this.page.getByText(
+      `No result found for "${searchTerm}"`
+    );
+    this.tryAgain = this.page.getByText('Please try again with another');
   }
 
   // searchResults = async (searchTerm: string) =>
