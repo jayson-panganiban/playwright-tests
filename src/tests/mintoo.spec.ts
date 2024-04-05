@@ -1,44 +1,47 @@
 // /tests/mintoo.spec.ts
-import { Page, expect, test } from '@playwright/test';
-import { HomePage } from '../pages/homePage';
 import { PageActions } from '../utils/pageActions';
-import { SearchResultsPage } from '../pages/searchResultsPage';
-import { Assert } from '../utils/assert';
 import { Filter } from '../components/filter';
+import { test, expect } from '../pages/pageFixtures';
 
-test('Home page UI components', async ({ page }) => {
-  const assert = new Assert();
-  const homePage = new HomePage(page);
+// TODO: context fixture
+test.describe('Home page UI components', () => {
+  test('navbars', async ({ page, homePage }) => {
+    await homePage.navigate('/');
+    await expect(page).toHaveTitle('Mintoo');
+    // Check navbars
+    const navBar = homePage.navBar.getLocators();
+    expect(navBar).toHaveAllLocatorsVisible();
+  }),
+    test('banners', async ({ page, homePage }) => {
+      // Check banners
+      await homePage.navigate('/');
+      await expect(homePage.homeText).toBeVisible();
+      // Check texts and links
+      await expect(homePage.collections).toBeVisible();
+      await expect(homePage.digitalCollectibles).toBeVisible();
+      await expect(homePage.viewAllCollectionsLink).toBeVisible();
+      await expect(homePage.viewAllCollectiblesLink).toBeVisible();
+    });
 
+  test('tab filters', async ({ page, homePage }) => {
+    // Check tab filters
+    await homePage.navigate('/');
+    const filterComponent = new Filter(page);
+    const filterTexts = [
+      'Trending',
+      'On Sale',
+      'Events',
+      'PALOMA Digital Awards',
+    ];
+    const tabFilter = await Promise.all(
+      filterTexts.map(text => filterComponent.filterText(text)),
+    );
+    expect(tabFilter).toHaveAllLocatorsVisible();
+  });
+});
+
+test('collections section', async ({ homePage }) => {
   await homePage.navigate('/');
-  await expect(page).toHaveTitle('Mintoo');
-
-  // Check navbars
-  const navbarLocators = homePage.navBar.getLocators();
-  assert.thatElementsAreVisible(navbarLocators);
-
-  // Check banners
-  await expect(homePage.homeText).toBeVisible();
-  // Check texts and links
-  await expect(homePage.collections).toBeVisible();
-  await expect(homePage.digitalCollectibles).toBeVisible();
-  await expect(homePage.viewAllCollectionsLink).toBeVisible();
-  await expect(homePage.viewAllCollectiblesLink).toBeVisible();
-
-  // Check tab filters
-  const filterComponent = new Filter(page);
-  const filterTexts = [
-    'Trending',
-    'On Sale',
-    'Events',
-    'PALOMA Digital Awards',
-  ];
-  const filterLocators = await Promise.all(
-    filterTexts.map((text) => filterComponent.filterText(text)),
-  );
-  await assert.thatElementsAreVisible(filterLocators);
-
-  // Check Collections section
   // Check arrow sliders
   const arrowNext = homePage.sliders.sliderArrowNext;
   const arrowPrevious = homePage.sliders.sliderArrowPrev;
@@ -54,16 +57,17 @@ test('Home page UI components', async ({ page }) => {
     await homePage.cards.heart.all(),
     await homePage.cards.heartCount.all(),
   ]);
-  assert.thatElementsAreVisible(collectionHearts);
-  assert.thatElementsAreVisible(heartCounts);
 
+  // Check hearts
+  expect(collectionHearts).toHaveAllLocatorsVisible();
+  expect(heartCounts).toHaveAllLocatorsVisible();
   // Check cards (Collection and NFT)
   const [collectionCards, nftCards] = await Promise.all([
     homePage.cards.collectionCard.all(),
     homePage.cards.nftCard.all(),
   ]);
-  assert.thatElementsAreVisible(collectionCards);
-  assert.thatElementsAreVisible(nftCards);
+  expect(collectionCards).toHaveAllLocatorsVisible();
+  expect(nftCards).toHaveAllLocatorsVisible();
   await expect(collectionCards.length).toBeGreaterThan(1);
   await expect(nftCards.length).toBeGreaterThan(1);
 });
@@ -73,29 +77,28 @@ test.describe('Search functionality', () => {
     { term: 'Gold Chest', valid: true },
     { term: 'Diablo4', valid: false },
   ];
-
   // Search tests
   searchTerms.forEach(({ term, valid }) => {
     test(`Should ${
       valid ? 'return' : 'not return'
     } search result for "${term}" collection or colletibles`, async ({
       page,
+      homePage,
+      searchResultsPage,
     }) => {
-      const homePage = new HomePage(page);
       await homePage.navigate('/');
-
       // Search
-      const searchResultsPage = new SearchResultsPage(page, term);
+      await expect(homePage.navBar.searchTextbox).toBeVisible();
       await homePage.navBar.searchTextbox.fill(term);
 
       if (valid) {
-        await expect(searchResultsPage.searchResult).toBeVisible();
+        await expect(searchResultsPage.searchResults(term)).toBeVisible();
         // Check all page until bottom using scroll
         const pageActions = new PageActions(page);
         await pageActions.scrollToBottom(page);
         await expect(searchResultsPage.footer.text).toBeVisible();
       } else {
-        await expect(searchResultsPage.noResultFound).toBeVisible();
+        await expect(searchResultsPage.noResultFound(term)).toBeVisible();
         await expect(searchResultsPage.tryAgain).toBeVisible();
       }
 
