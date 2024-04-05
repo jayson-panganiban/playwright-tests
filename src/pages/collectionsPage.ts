@@ -2,7 +2,7 @@ import { Locator, Page } from '@playwright/test';
 import { BasePage } from './basePage';
 import { Cards } from '../components/cards';
 
-export class CollectionPage extends BasePage<Page> {
+export class CollectionsPage extends BasePage<Page> {
   readonly cards: Cards;
   readonly collections: Locator;
 
@@ -11,4 +11,5 @@ export class CollectionPage extends BasePage<Page> {
     this.cards = new Cards(page);
     this.collections = this.page.getByText('Collections').first();
   }
+
 }

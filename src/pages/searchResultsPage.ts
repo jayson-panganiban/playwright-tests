@@ -13,31 +13,26 @@ export class SearchResultsPage extends BasePage<Page> {
   readonly searchResult: Locator;
   readonly exclusiveCollections: Locator;
   readonly noExclusiveCollectionsFound: Locator;
-  readonly noResultFound: Locator;
   readonly tryAgain: Locator;
-  readonly searchTerm: string;
 
-  constructor(page: Page, searchTerm: string) {
+  constructor(page: Page) {
     super(page);
     this.footer = new Footer(page);
     this.navBar = new NavBar(page);
     this.sliders = new Sliders(page);
     this.cards = new Cards(page);
-    this.searchResult = this.page
-      .getByText(`Search results for "${searchTerm}"`)
-      .first();
     this.exclusiveCollections = this.page
       .getByText('Exclusive Collections')
       .first();
     this.noExclusiveCollectionsFound = this.page.getByText(
-      'No  Exclusive Collections'
-    );
-    this.noResultFound = this.page.getByText(
-      `No result found for "${searchTerm}"`
+      'No  Exclusive Collections',
     );
     this.tryAgain = this.page.getByText('Please try again with another');
   }
 
-  // searchResults = async (searchTerm: string) =>
-  //   this.page.getByText(`Search results for "${searchTerm}"`).first();
+  searchResults = (searchTerm: string): Locator =>
+    this.page.getByText(`Search results for "${searchTerm}"`).first();
+
+  noResultFound = (searchTerm: string) =>
+    this.page.getByText(`No result found for "${searchTerm}"`);
 }
