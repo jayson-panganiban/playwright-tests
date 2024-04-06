@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test';
+import { Response, Page, Locator } from '@playwright/test';
 import globalTimeout from '../../playwright.config';
 
 export abstract class BasePage<T extends Page> {
@@ -10,37 +10,18 @@ export abstract class BasePage<T extends Page> {
     this.timeout = timeout ?? globalTimeout?.timeout ?? 15_000;
   }
 
-  async navigate(url: string, timeout?: number): Promise<void> {
-    await this.page.goto(url, { timeout: timeout ?? this.timeout });
+  get title(): Promise<string> {
+    return this.page.title();
   }
 
-  async waitForLocator(locator: Locator, timeout?: number): Promise<void> {
-    try {
-      await locator.waitFor({
-        state: 'visible',
-        timeout: timeout ?? this.timeout,
-      });
-    } catch (error) {
-      console.error(
-        `Locator did not become visible within the specified ${timeout}. Error: ${error.message}`
-      );
-      throw error;
-    }
-  }
+  navigate = async (
+    url: string,
+    timeout?: number,
+  ): Promise<null | Response> => {
+    return await this.page.goto(url, { timeout: timeout ?? this.timeout });
+  };
 
-  async waitForCondition(
-    condition: () => Promise<boolean>,
-    timeout?: number
-  ): Promise<void> {
-    try {
-      await this.page.waitForFunction(condition, {
-        timeout: timeout ?? this.timeout,
-      });
-    } catch (error) {
-      console.error(
-        `Condition did not become true within the specified ${timeout}. Error: ${error.message}`
-      );
-      throw error;
-    }
-  }
+  textLocator = (text: string): Locator => {
+    return this.page.getByText(`${text}`);
+  };
 }

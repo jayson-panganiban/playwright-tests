@@ -1,75 +1,76 @@
-// /tests/mintoo.spec.ts
 import { PageActions } from '../utils/pageActions';
-import { Filter } from '../components/filter';
 import { test, expect } from '../pages/pageFixtures';
+import { Locator } from '@playwright/test';
 
 // TODO: context fixture
-test.describe('Home page UI components', () => {
-  test('navbars', async ({ page, homePage }) => {
+test.describe('Home Page', () => {
+  test.beforeEach(async ({ homePage }) => {
     await homePage.navigate('/');
+    await expect(await homePage.title).toBe('Mintoo');
+  });
+
+  test('navbars', async ({ page, homePage }) => {
     await expect(page).toHaveTitle('Mintoo');
     // Check navbars
     const navBar = homePage.navBar.getLocators();
     expect(navBar).toHaveAllLocatorsVisible();
-  }),
-    test('banners', async ({ page, homePage }) => {
-      // Check banners
-      await homePage.navigate('/');
-      await expect(homePage.homeText).toBeVisible();
-      // Check texts and links
-      await expect(homePage.collections).toBeVisible();
-      await expect(homePage.digitalCollectibles).toBeVisible();
-      await expect(homePage.viewAllCollectionsLink).toBeVisible();
-      await expect(homePage.viewAllCollectiblesLink).toBeVisible();
-    });
+  });
 
-  test('tab filters', async ({ page, homePage }) => {
+  test('banners', async ({ homePage }) => {
+    // Check banners
+    await expect(homePage.homeText).toBeVisible();
+    // Check texts and links
+    await expect(homePage.collections).toBeVisible();
+    await expect(homePage.digitalCollectibles).toBeVisible();
+    await expect(homePage.viewAllCollectionsLink).toBeVisible();
+    await expect(homePage.viewAllCollectiblesLink).toBeVisible();
+  });
+
+  test('tab filters', async ({ homePage }) => {
     // Check tab filters
-    await homePage.navigate('/');
-    const filterComponent = new Filter(page);
     const filterTexts = [
       'Trending',
       'On Sale',
       'Events',
       'PALOMA Digital Awards',
     ];
-    const tabFilter = await Promise.all(
-      filterTexts.map(text => filterComponent.filterText(text)),
+
+    const tabFilters: Locator[] = await Promise.all(
+      filterTexts.map(value => homePage.textLocator(value)),
     );
-    expect(tabFilter).toHaveAllLocatorsVisible();
+    expect(tabFilters).toHaveAllLocatorsVisible();
+  
   });
-});
 
-test('collections section', async ({ homePage }) => {
-  await homePage.navigate('/');
-  // Check arrow sliders
-  const arrowNext = homePage.sliders.sliderArrowNext;
-  const arrowPrevious = homePage.sliders.sliderArrowPrev;
-  await expect.soft(arrowPrevious).not.toBeVisible();
-  await expect(arrowNext)
-    .toBeVisible()
-    .then(() => arrowNext.click());
-  await expect(arrowPrevious)
-    .toBeVisible()
-    .then(() => arrowPrevious.click());
-  // Check heart and heart count across all collections section
-  const [collectionHearts, heartCounts] = await Promise.all([
-    await homePage.cards.heart.all(),
-    await homePage.cards.heartCount.all(),
-  ]);
-
-  // Check hearts
-  expect(collectionHearts).toHaveAllLocatorsVisible();
-  expect(heartCounts).toHaveAllLocatorsVisible();
-  // Check cards (Collection and NFT)
-  const [collectionCards, nftCards] = await Promise.all([
-    homePage.cards.collectionCard.all(),
-    homePage.cards.nftCard.all(),
-  ]);
-  expect(collectionCards).toHaveAllLocatorsVisible();
-  expect(nftCards).toHaveAllLocatorsVisible();
-  await expect(collectionCards.length).toBeGreaterThan(1);
-  await expect(nftCards.length).toBeGreaterThan(1);
+  test('collections and nft', async ({ homePage }) => {
+    // Check arrow sliders
+    const arrowNext = homePage.sliders.sliderArrowNext;
+    const arrowPrevious = homePage.sliders.sliderArrowPrev;
+    await expect.soft(arrowPrevious).not.toBeVisible();
+    await expect(arrowNext)
+      .toBeVisible()
+      .then(() => arrowNext.click());
+    await expect(arrowPrevious)
+      .toBeVisible()
+      .then(() => arrowPrevious.click());
+    // Check heart and heart count across all collections section
+    const [collectionHearts, heartCounts] = await Promise.all([
+      await homePage.cards.heart.all(),
+      await homePage.cards.heartCount.all(),
+    ]);
+    // Check hearts
+    expect(collectionHearts).toHaveAllLocatorsVisible();
+    expect(heartCounts).toHaveAllLocatorsVisible();
+    // Check cards (Collection and NFT)
+    const [collectionCards, nftCards] = await Promise.all([
+      homePage.cards.collectionCard.all(),
+      homePage.cards.nftCard.all(),
+    ]);
+    expect(collectionCards).toHaveAllLocatorsVisible();
+    expect(nftCards).toHaveAllLocatorsVisible();
+    await expect(collectionCards.length).toBeGreaterThan(1);
+    await expect(nftCards.length).toBeGreaterThan(1);
+  });
 });
 
 test.describe('Search functionality', () => {
@@ -81,7 +82,7 @@ test.describe('Search functionality', () => {
   searchTerms.forEach(({ term, valid }) => {
     test(`Should ${
       valid ? 'return' : 'not return'
-    } search result for "${term}" collection or colletibles`, async ({
+    } search result for "${term}" collection or collectibles`, async ({
       page,
       homePage,
       searchResultsPage,

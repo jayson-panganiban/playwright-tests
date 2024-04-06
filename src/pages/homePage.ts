@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test';
+import { Locator, BrowserContext, Page } from '@playwright/test';
 import { NavBar } from '../components/navBar';
 import { BasePage } from './basePage';
 import { Footer } from '../components/footer';
@@ -37,10 +37,9 @@ export class HomePage extends BasePage<Page> {
     this.digitalCollectibles = this.page
       .getByText('Digital Collectibles')
       .nth(3);
-    // this.page.locator.getAttribute('span', 'font-size') });
     this.viewAllCollectionsLink = this.page.getByText('View All Collections >');
     this.viewAllCollectiblesLink = this.page.getByText(
-      'View All Collectibles >'
+      'View All Collectibles >',
     );
   }
 }

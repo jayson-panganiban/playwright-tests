@@ -33,6 +33,6 @@ export class SearchResultsPage extends BasePage<Page> {
   searchResults = (searchTerm: string): Locator =>
     this.page.getByText(`Search results for "${searchTerm}"`).first();
 
-  noResultFound = (searchTerm: string) =>
+  noResultFound = (searchTerm: string): Locator =>
     this.page.getByText(`No result found for "${searchTerm}"`);
 }

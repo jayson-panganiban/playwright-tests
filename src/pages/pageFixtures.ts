@@ -1,4 +1,4 @@
-import { test as base, Locator } from '@playwright/test';
+import { test as base, Locator, BrowserContext } from '@playwright/test';
 import { expect as baseExpect } from '@playwright/test';
 import { HomePage } from './homePage';
 import { SearchResultsPage } from './searchResultsPage';
@@ -8,76 +8,55 @@ type PageFixtures = {
   homePage: HomePage;
   searchResultsPage: SearchResultsPage;
   collectionsPage: CollectionsPage;
-  // TODO: NFTPage Fixture
-  // nftPage: NFTPage;
 };
 
 export const test = base.extend<PageFixtures>({
   homePage: async ({ page }, use) => {
-    // Set up the fixture.
-    const homePage = new HomePage(page);
-    // Use the fixture value in the test.
-    await use(homePage);
+    await use(new HomePage(page));
   },
-
-  collectionsPage: async ({ page }, use) => {
-    const collectionsPage = new CollectionsPage(page);
-    await use(collectionsPage);
-  },
-
   searchResultsPage: async ({ page }, use) => {
-    const searchResultsPage = new SearchResultsPage(page);
-    await use(searchResultsPage);
+    await use(new SearchResultsPage(page));
   },
-
-  // TODO: NFTPage Fixture
-  // nftPage: async ({ page }, use) =} {
-  //     const nftPage = new NFTPage(page);
-  //     await userInfo(nftPage);
-  // }
+  collectionsPage: async ({ page }, use) => {
+    await use(new CollectionsPage(page));
+  },
 });
 
 export const expect = baseExpect.extend({
-  async toHaveAllLocatorsVisible(
-    locators: Locator[],
-    options?: { timeout?: number },
-  ) {
+  async toHaveAllLocatorsVisible(locators: Locator[]) {
     const assertionName = 'toHaveAllLocatorsVisible';
-    let pass: boolean;
-    let matcherResult: any;
     try {
-      await Promise.all(locators.map(locator => locator.isVisible()));
-      pass = true;
+      await Promise.all(
+        locators.map(async locator => {
+          const isVisible = await locator.isVisible();
+          if (!isVisible) {
+            throw new Error(`Locator ${locator} is not visible`);
+          }
+        }),
+      );
+
+      return {
+        message: () =>
+          this.utils.matcherHint(assertionName, undefined, undefined, {
+            isNot: this.isNot,
+          }) +
+          '\n\n' +
+          `All locators are visible.\n`,
+        pass: true,
+        name: assertionName,
+      };
     } catch (e: any) {
-      matcherResult = e.matcherResult;
-      pass = false;
+      return {
+        message: () =>
+          this.utils.matcherHint(assertionName, undefined, undefined, {
+            isNot: this.isNot,
+          }) +
+          '\n\n' +
+          `Received: ${this.utils.printReceived(e.message)}`,
+        pass: false,
+        name: assertionName,
+        actual: e.message,
+      };
     }
-
-    const message = pass
-      ? () =>
-          this.utils.matcherHint(assertionName, undefined, undefined, {
-            isNot: this.isNot,
-          }) +
-          '\n\n' +
-          `Locator: ${locators}\n` +
-          (matcherResult
-            ? `Received: ${this.utils.printReceived(matcherResult.actual)}`
-            : '')
-      : () =>
-          this.utils.matcherHint(assertionName, undefined, undefined, {
-            isNot: this.isNot,
-          }) +
-          '\n\n' +
-          `Locator: ${locators}\n` +
-          (matcherResult
-            ? `Received: ${this.utils.printReceived(matcherResult.actual)}`
-            : '');
-
-    return {
-      message,
-      pass,
-      name: assertionName,
-      actual: matcherResult?.actual,
-    };
   },
 });
