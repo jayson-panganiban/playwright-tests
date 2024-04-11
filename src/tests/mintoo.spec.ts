@@ -1,22 +1,19 @@
-import { PageActions } from '../utils/pageActions';
 import { test, expect } from '../pages/pageFixtures';
 import { Locator } from '@playwright/test';
 
-// TODO: context fixture
-test.describe('Home Page', () => {
-  test.beforeEach(async ({ homePage }) => {
+test.describe('Home Page UI Components Validation', () => {
+ test.beforeEach(async ({ homePage }) => {
     await homePage.navigate('/');
-    await expect(await homePage.title).toBe('Mintoo');
-  });
+    expect(await homePage.title).toMatch('Mintoo')
+ });
 
-  test('navbars', async ({ page, homePage }) => {
-    await expect(page).toHaveTitle('Mintoo');
+ test('navbars', async ({ homePage }) => {
     // Check navbars
     const navBar = homePage.navBar.getLocators();
     expect(navBar).toHaveAllLocatorsVisible();
-  });
+ });
 
-  test('banners', async ({ homePage }) => {
+ test('banners', async ({ homePage }) => {
     // Check banners
     await expect(homePage.homeText).toBeVisible();
     // Check texts and links
@@ -24,9 +21,9 @@ test.describe('Home Page', () => {
     await expect(homePage.digitalCollectibles).toBeVisible();
     await expect(homePage.viewAllCollectionsLink).toBeVisible();
     await expect(homePage.viewAllCollectiblesLink).toBeVisible();
-  });
+ });
 
-  test('tab filters', async ({ homePage }) => {
+ test('tab filters', async ({ homePage }) => {
     // Check tab filters
     const filterTexts = [
       'Trending',
@@ -38,11 +35,11 @@ test.describe('Home Page', () => {
     const tabFilters: Locator[] = await Promise.all(
       filterTexts.map(value => homePage.textLocator(value)),
     );
-    expect(tabFilters).toHaveAllLocatorsVisible();
-  
-  });
 
-  test('collections and nft', async ({ homePage }) => {
+    expect(tabFilters).toHaveAllLocatorsVisible();
+ });
+
+ test('collections and nft', async ({ homePage }) => {
     // Check arrow sliders
     const arrowNext = homePage.sliders.sliderArrowNext;
     const arrowPrevious = homePage.sliders.sliderArrowPrev;
@@ -68,24 +65,24 @@ test.describe('Home Page', () => {
     ]);
     expect(collectionCards).toHaveAllLocatorsVisible();
     expect(nftCards).toHaveAllLocatorsVisible();
-    await expect(collectionCards.length).toBeGreaterThan(1);
-    await expect(nftCards.length).toBeGreaterThan(1);
-  });
+    expect(collectionCards.length).toBeGreaterThan(1);
+    expect(nftCards.length).toBeGreaterThan(1);
+ });
 });
 
 test.describe('Search functionality', () => {
-  const searchTerms = [
+ const searchTerms = [
     { term: 'Gold Chest', valid: true },
-    { term: 'Diablo4', valid: false },
-  ];
-  // Search tests
-  searchTerms.forEach(({ term, valid }) => {
+    { term: 'Diablo 4', valid: false },
+ ];
+ // Search tests
+ searchTerms.forEach(({ term, valid }) => {
     test(`Should ${
       valid ? 'return' : 'not return'
     } search result for "${term}" collection or collectibles`, async ({
-      page,
       homePage,
       searchResultsPage,
+      pageActions,
     }) => {
       await homePage.navigate('/');
       // Search
@@ -95,9 +92,7 @@ test.describe('Search functionality', () => {
       if (valid) {
         await expect(searchResultsPage.searchResults(term)).toBeVisible();
         // Check all page until bottom using scroll
-        const pageActions = new PageActions(page);
-        await pageActions.scrollToBottom(page);
-        await expect(searchResultsPage.footer.text).toBeVisible();
+        pageActions.scrollToBottom();
       } else {
         await expect(searchResultsPage.noResultFound(term)).toBeVisible();
         await expect(searchResultsPage.tryAgain).toBeVisible();
@@ -105,5 +100,5 @@ test.describe('Search functionality', () => {
 
       await searchResultsPage.navBar.searchTextbox.clear();
     });
-  });
+ });
 });
