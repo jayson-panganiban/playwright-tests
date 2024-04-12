@@ -10,15 +10,16 @@ export class PageActions {
 
  async scrollToBottom(): Promise<void> {
     const footer = new Footer(this.page);
+    let reachedBottom = false;
     try {
-      while (true) {
+      while (!reachedBottom) {
         await this.page.evaluate(() => {
           window.scrollTo(0, document.body.scrollHeight);
         });
         await this.page.waitForTimeout(1500);
         const stopCondition = await footer.text.isVisible();
         if (stopCondition) {
-          break;
+          reachedBottom = true;
         }
       }
     } catch (error) {

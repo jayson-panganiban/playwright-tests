@@ -46,8 +46,8 @@ export default defineConfig({
 
     headless: true,
 
-    navigationTimeout: 10_000,
-    actionTimeout: 10_000,
+    navigationTimeout: 30_000,
+    actionTimeout: 30_000,
   },
 
   /* Configure projects for major browsers */

@@ -10,18 +10,15 @@ export abstract class BasePage<T extends Page> {
     this.timeout = timeout ?? globalTimeout?.timeout ?? 15_000;
   }
 
+  textLocator = (text: string): Locator => {
+    return this.page.getByText(`${text}`);
+  };
+
   get title(): Promise<string> {
     return this.page.title();
   }
 
-  navigate = async (
-    url: string,
-    timeout?: number,
-  ): Promise<null | Response> => {
+  async navigate(url: string, timeout?: number): Promise<null | Response> {
     return await this.page.goto(url, { timeout: timeout ?? this.timeout });
-  };
-
-  textLocator = (text: string): Locator => {
-    return this.page.getByText(`${text}`);
-  };
+  }
 }

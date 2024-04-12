@@ -7,12 +7,8 @@
     "skipLibCheck": true,                  /* Skip type checking of all declaration files */
     "forceConsistentCasingInFileNames": true /* Ensures that all file names are consistently cased */
   },
-  "include": [
-    "tests/**/*.ts",                       /* Include test files */
-    "playwright.config.ts",                /* Include Playwright configuration file */
-  ],
+  "include": ["src"],
   "exclude": [
     "node_modules",                        /* Exclude node_modules directory */
-    "tests-examples"                       /* Exclude tests-examples directory */
   ]
 }

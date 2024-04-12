@@ -1,4 +1,4 @@
-import { Locator, BrowserContext, Page } from '@playwright/test';
+import { Locator, Page } from '@playwright/test';
 import { NavBar } from '../components/navBar';
 import { BasePage } from './basePage';
 import { Footer } from '../components/footer';
@@ -10,16 +10,15 @@ export class HomePage extends BasePage<Page> {
   readonly footer: Footer;
   readonly cards: Cards;
   readonly sliders: Sliders;
-  readonly container: Locator;
   readonly viewAllCollectionsLink: Locator;
   readonly viewAllCollectiblesLink: Locator;
   readonly collections: Locator;
   readonly digitalCollectibles: Locator;
   readonly banner: Locator;
+  readonly filter: Locator;
   readonly welcomeText: Locator;
   readonly mintooImage: Locator;
   readonly homeText: Locator;
-  readonly heart: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -28,6 +27,7 @@ export class HomePage extends BasePage<Page> {
     this.cards = new Cards(page);
     this.sliders = new Sliders(page);
     this.banner = this.page.locator('.banner-container').first();
+    this.filter = this.page.locator('.filter-container').first();
     this.welcomeText = this.page.locator('text=Hello! Welcome to').first();
     this.mintooImage = this.page.locator("img[alt='Mintoo']").nth(1);
     this.homeText = this.page
