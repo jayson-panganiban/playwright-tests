@@ -1,18 +1,12 @@
 import { expect as baseExpect, Locator } from '@playwright/test';
-import globalTimeout from '../../playwright.config';
 
 export const expect = baseExpect.extend({
-  async toHaveAllLocatorsVisible(locators: Locator[]) {
+  async toBeAllVisible(locators: Locator[]) {
     const assertionName = 'toHaveAllLocatorsVisible';
     try {
       await Promise.all(
         locators.map(async locator => {
-          const isVisible = await locator.isVisible({
-            timeout: globalTimeout.timeout,
-          });
-          if (!isVisible) {
-            throw new Error(`Locator ${locator} is not visible`);
-          }
+          await expect(locator).toBeVisible();
         }),
       );
       return {

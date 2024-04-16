@@ -10,7 +10,6 @@ export class SearchResultsPage extends BasePage<Page> {
   readonly footer: Footer;
   readonly sliders: Sliders;
   readonly cards: Cards;
-  readonly searchResult: Locator;
   readonly exclusiveCollections: Locator;
   readonly noExclusiveCollectionsFound: Locator;
   readonly tryAgain: Locator;
@@ -30,6 +29,8 @@ export class SearchResultsPage extends BasePage<Page> {
     this.tryAgain = this.page.getByText('Please try again with another');
   }
 
+  get url(): string { return '/search-results'; }
+  
   searchResults = (searchTerm: string): Locator =>
     this.page.getByText(`Search results for "${searchTerm}"`).first();
 

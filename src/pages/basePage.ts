@@ -14,10 +14,6 @@ export abstract class BasePage<T extends Page> {
     return this.page.getByText(`${text}`);
   };
 
-  get title(): Promise<string> {
-    return this.page.title();
-  }
-
   async navigate(url: string, timeout?: number): Promise<null | Response> {
     return await this.page.goto(url, { timeout: timeout ?? this.timeout });
   }

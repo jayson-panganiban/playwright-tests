@@ -6,18 +6,16 @@ export class NavBar extends BaseComponent<Page> {
   readonly signUpButton: Locator;
   readonly loginButton: Locator;
   readonly searchTextbox: Locator;
-  readonly header: Locator;
 
   constructor(page: Page) {
     super(page);
-    this.header = this.page.locator('.header');
-    this.mintooLink = this.page.getByRole('link', { name: 'Mintoo' });
-    this.signUpButton = this.page.getByRole('button', { name: 'Sign up' });
-    this.loginButton = this.page.getByRole('button', { name: 'Login' });
-    this.searchTextbox = this.page.getByRole('textbox');
+    this.mintooLink = page.getByRole('link', { name: 'Mintoo' });
+    this.signUpButton = page.getByRole('button', { name: 'Sign up' });
+    this.loginButton = page.getByRole('button', { name: 'Login' });
+    this.searchTextbox = page.getByRole('textbox');
   }
 
-  getLocators(): Locator[] {
+  get all(): Locator[] {
     return [
       this.mintooLink,
       this.signUpButton,

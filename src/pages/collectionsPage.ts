@@ -11,5 +11,4 @@ export class CollectionsPage extends BasePage<Page> {
     this.cards = new Cards(page);
     this.collections = this.page.getByText('Collections').first();
   }
-
 }

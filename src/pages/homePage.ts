@@ -28,10 +28,10 @@ export class HomePage extends BasePage<Page> {
     this.sliders = new Sliders(page);
     this.banner = this.page.locator('.banner-container').first();
     this.filter = this.page.locator('.filter-container').first();
-    this.welcomeText = this.page.locator('text=Hello! Welcome to').first();
-    this.mintooImage = this.page.locator("img[alt='Mintoo']").nth(1);
+    this.welcomeText = this.page.getByText('Hello! Welcome to').first();
+    this.mintooImage = this.page.getByAltText("Mintoo").nth(1);
     this.homeText = this.page
-      .locator('text=This is the home for you and')
+      .getByText(/This is the home for you and/)
       .first();
     this.collections = this.page.getByText('Collections').first();
     this.digitalCollectibles = this.page
@@ -42,4 +42,8 @@ export class HomePage extends BasePage<Page> {
       'View All Collectibles >',
     );
   }
+  
+  get url(): string { return '/'; }
+
+  get title(): string { return 'Mintoo'}
 }

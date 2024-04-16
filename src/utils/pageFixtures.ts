@@ -1,8 +1,8 @@
 import { test as base, BrowserContext } from '@playwright/test';
-import { HomePage } from './homePage';
-import { SearchResultsPage } from './searchResultsPage';
-import { CollectionsPage } from './collectionsPage';
-import { PageActions } from '../utils/pageActions';
+import { HomePage } from '../pages/homePage';
+import { SearchResultsPage } from '../pages/searchResultsPage';
+import { CollectionsPage } from '../pages/collectionsPage';
+import { PageActions } from './pageActions';
 
 type PageFixtures = {
   browserContext: BrowserContext;

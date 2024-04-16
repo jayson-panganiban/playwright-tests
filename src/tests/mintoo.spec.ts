@@ -1,17 +1,15 @@
-import { test } from '../pages/pageFixtures';
+import { test } from '../utils/pageFixtures';
 import { expect } from '../utils/customMatcher';
 import { Locator } from '@playwright/test';
 
 test.describe('home page ui validation', () => {
-  test.beforeEach(async ({ homePage }) => {
+  test.beforeEach(async ({ page, homePage }) => {
     await homePage.navigate('/');
-    await expect(await homePage.title).toMatch('Mintoo');
+    await expect(page).toHaveTitle(homePage.title);
   });
 
   test('navbars', async ({ homePage }) => {
-    // Check navbars
-    await expect(homePage.navBar.header).toBeVisible();
-    await expect(homePage.navBar.getLocators()).toHaveAllLocatorsVisible();
+    await expect(homePage.navBar.all).toBeAllVisible();
   });
 
   test('banners', async ({ homePage }) => {
@@ -28,44 +26,44 @@ test.describe('home page ui validation', () => {
   });
 
   test('tab filters', async ({ homePage }) => {
-    await expect(homePage.filter).toBeVisible();
-    // Check tab filters
+    //TODO: Use texts from API response
     const filterTexts = [
       'Trending',
       'On Sale',
       'Events',
       'PALOMA Digital Awards',
     ];
-    const tabFilters: Locator[] = await Promise.all(
+    const filterComponent: Locator[] = await Promise.all(
       filterTexts.map(value => homePage.textLocator(value)),
     );
-    expect(tabFilters).toHaveAllLocatorsVisible();
+    await expect(filterComponent).toBeAllVisible();
   });
 
   test('collections and nft', async ({ homePage }) => {
     // Check arrow sliders
-    const arrowNext = homePage.sliders.sliderArrowNext;
-    const arrowPrevious = homePage.sliders.sliderArrowPrev;
+    const arrowNext = homePage.sliders.arrowNext;
+    const arrowPrevious = homePage.sliders.arrowPrev;
     await expect.soft(arrowPrevious).toBeHidden();
     await arrowNext.click();
     await arrowPrevious.click();
     // Check heart and heart count across all collections section
-    const [collectionHearts, heartCounts] = await Promise.all([
-      await homePage.cards.heart.all(),
-      await homePage.cards.heartCount.all(),
-    ]);
+    const [collectionHearts, collectionHeartsCount, collectionCards, nftCards] =
+      await Promise.all([
+        await homePage.cards.heart.all(),
+        await homePage.cards.heartCount.all(),
+        await homePage.cards.collection.all(),
+        await homePage.cards.nft.all(),
+      ]);
     // Check hearts
-    expect(collectionHearts).toHaveAllLocatorsVisible();
-    expect(heartCounts).toHaveAllLocatorsVisible();
+    await expect(collectionHearts).toBeAllVisible();
+    await expect(collectionHeartsCount).toBeAllVisible();
     // Check cards (Collection and NFT)
-    const [collectionCards, nftCards] = await Promise.all([
-      homePage.cards.collectionCard.all(),
-      homePage.cards.nftCard.all(),
-    ]);
-    expect(collectionCards).toHaveAllLocatorsVisible();
-    expect(nftCards).toHaveAllLocatorsVisible();
-    expect(collectionCards.length).toBeGreaterThan(1);
-    expect(nftCards.length).toBeGreaterThan(1);
+    await expect(collectionCards).toBeAllVisible();
+    await expect(nftCards).toBeAllVisible();
+    // Minimum collection is 3
+    await expect(collectionCards.length).toBeGreaterThanOrEqual(3);
+    // Minimum collectible is 10
+    await expect(nftCards.length).toBeGreaterThanOrEqual(10);
   });
 });
 
@@ -74,27 +72,31 @@ test.describe('search functionality', () => {
     { term: 'Gold Chest', valid: true },
     { term: 'Diablo 4', valid: false },
   ];
-  // Search tests
+
   searchTerms.forEach(({ term, valid }) => {
     test(`Should ${
       valid ? 'return' : 'not return'
     } search result for "${term}" collection or collectibles`, async ({
+      page,
       homePage,
       searchResultsPage,
       pageActions,
     }) => {
       await homePage.navigate('/');
-      // Search
+
       await expect(homePage.navBar.searchTextbox).toBeVisible();
       await homePage.navBar.searchTextbox.fill(term);
+      await expect(page).toHaveURL(searchResultsPage.url);
 
       if (valid) {
+        await expect(searchResultsPage.noResultFound(term)).toBeHidden();
         await expect(searchResultsPage.searchResults(term)).toBeVisible();
         // Check all page until bottom using scroll
         pageActions.scrollToBottom();
       } else {
         await expect(searchResultsPage.noResultFound(term)).toBeVisible();
         await expect(searchResultsPage.tryAgain).toBeVisible();
+        await expect(searchResultsPage.searchResults(term)).toBeHidden();
       }
 
       await searchResultsPage.navBar.searchTextbox.clear();
